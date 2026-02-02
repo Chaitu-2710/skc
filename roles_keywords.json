@@ -1,0 +1,44 @@
+{
+    "frontend": {
+        "title": "Frontend Developer",
+        "must_have": ["react", "javascript", "html", "css", "dom manipulation"],
+        "important": ["typescript", "tailwind", "nextjs", "git", "restful api", "unit testing"],
+        "optional": ["webpack", "vite", "redux", "accessibility", "sass", "performance optimization"]
+    },
+    "backend": {
+        "title": "Backend Developer",
+        "must_have": ["java", "spring boot", "rest api", "sql", "hibernate"],
+        "important": ["node.js", "express", "python", "git", "maven", "junit", "spring cloud"],
+        "optional": ["docker", "kubernetes", "aws", "redis", "microservices", "kafka", "postgresql"]
+    },
+    "fullstack": {
+        "title": "Full Stack Engineer",
+        "must_have": ["react", "node.js", "sql", "javascript", "express"],
+        "important": ["typescript", "git", "rest api", "cloud hosting", "auth", "database design"],
+        "optional": ["mongodb", "graphql", "deployment", "cicd", "system design", "docker", "redis"]
+    },
+    "ds": {
+        "title": "Data Scientist",
+        "must_have": ["python", "sql", "machine learning", "statistics", "data cleaning"],
+        "important": ["pandas", "numpy", "scikit-learn", "data visualization", "hypothesis testing"],
+        "optional": ["tensorflow", "pytorch", "tableau", "deep learning", "r", "nlp", "big data"]
+    },
+    "pm": {
+        "title": "Product Manager",
+        "must_have": ["agile", "scrum", "roadmapping", "communication", "product strategy"],
+        "important": ["stakeholder management", "user research", "analytics", "jira", "product launch"],
+        "optional": ["product discovery", "strategic thinking", "market analysis", "wireframing"]
+    },
+    "uiux": {
+        "title": "UI/UX Designer",
+        "must_have": ["figma", "user experience", "interface design", "prototyping", "wireframing"],
+        "important": ["user research", "visual design", "sketch", "usability testing", "design systems"],
+        "optional": ["adobe xd", "interaction design", "color theory", "typography", "adobe creative suite"]
+    },
+    "devops": {
+        "title": "DevOps Engineer",
+        "must_have": ["ci/cd", "docker", "kubernetes", "aws", "infrastructure as code"],
+        "important": ["terraform", "jenkins", "linux", "ansible", "monitoring", "shell scripting"],
+        "optional": ["logging", "bash", "azure", "security", "gcp", "prometheus", "grafana"]
+    }
+}

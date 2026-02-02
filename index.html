@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Scan Pro | AI-Powered Job Matcher</title>
+    <meta name="description"
+        content="Optimize your resume for any job role. Get real-time scoring, keyword matching, and expert insights to land your dream job.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <!-- PDF.js library for resume parsing -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="background-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">
+                <span class="logo-icon">✨</span>
+                <span class="logo-text">ResumeScan<span>Pro</span></span>
+            </div>
+
+            <div id="systemHealth" class="status-indicator">
+                <span class="status-dot"></span>
+                <small id="statusText">Checking Connection...</small>
+            </div>
+
+            <div class="nav-links">
+                <a href="#" class="active" id="scannerTab">Scanner</a>
+                <a href="#" id="historyTab">History</a>
+                <a href="#" id="adminTab" class="hidden">Admin Dashboard</a>
+                <div id="authNav">
+                    <button id="logoutBtn" class="btn outline-btn hidden">Logout</button>
+                    <button id="loginTabBtn" class="btn primary-btn">Login</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container">
+        <!-- Auth Section -->
+        <section id="authSection" class="auth-section">
+            <div class="card glass auth-card">
+                <!-- Removed Phone Auth Toggle -->
+
+                <!-- Email/Gmail Login -->
+                <!-- Email/Gmail Login -->
+                <div id="emailAuthForm" class="auth-form">
+                    <div class="auth-header">
+                        <h2 id="authTitle">Welcome Back</h2>
+                        <p id="authSubtitle">Please enter your details to continue</p>
+                    </div>
+
+                    <div id="nameField" class="form-group hidden">
+                        <label>Full Name</label>
+                        <input type="text" id="nameInput" placeholder="John Doe">
+                    </div>
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" id="emailInput" placeholder="name@gmail.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="passwordInput" placeholder="••••••••">
+                    </div>
+                    <button id="primaryAuthBtn" class="btn primary-btn">Login</button>
+                    <p class="auth-switch">Don't have an account? <a href="#" id="toggleSignup">Register Now</a></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Home / Scanner Section (Hidden until Login) -->
+        <div id="protectedContent" class="hidden">
+            <header class="hero-section">
+                <h1 class="gradient-text">Beat the ATS. Get the Job.</h1>
+                <p class="subtitle">Analyze your resume against industry-standard job roles. Identify missing keywords
+                    and
+                    boost your visibility instantly.</p>
+            </header>
+
+            <section class="scan-workspace">
+                <div class="card glass">
+                    <div class="card-header">
+                        <h2>1. Setup Your Target</h2>
+                    </div>
+                    <div class="form-group">
+                        <div class="input-header">
+                            <label for="jobRole">Target Job Role</label>
+                            <div class="toggle-container">
+                                <span>Use Custom Description</span>
+                                <input type="checkbox" id="customToggle" class="toggle-input">
+                                <label for="customToggle" class="toggle-label"></label>
+                            </div>
+                        </div>
+
+                        <div id="roleSelectWrapper" class="select-wrapper">
+                            <select id="jobRole">
+                                <option value="" disabled selected>Select a job role...</option>
+                                <option value="frontend">Frontend Developer</option>
+                                <option value="backend">Backend Developer</option>
+                                <option value="fullstack">Full Stack Engineer</option>
+                                <option value="ds">Data Scientist</option>
+                                <option value="pm">Product Manager</option>
+                                <option value="uiux">UI/UX Designer</option>
+                                <option value="devops">DevOps Engineer</option>
+                            </select>
+                        </div>
+
+                        <div id="customDescWrapper" class="form-group hidden">
+                            <textarea id="customJobDesc"
+                                placeholder="Paste the job description here to extract keywords automatically..."
+                                rows="6"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="card-header">
+                        <h2>2. Upload Resume or Paste Text</h2>
+                    </div>
+
+                    <div class="upload-zone" id="dropZone">
+                        <input type="file" id="fileInput" accept=".pdf" hidden>
+                        <div class="upload-content">
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                <polyline points="17 8 12 3 7 8" />
+                                <line x1="12" y1="3" x2="12" y2="15" />
+                            </svg>
+                            <p><strong>Click to upload PDF</strong> or drag and drop</p>
+                            <span id="fileNameDisplay" class="file-name"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <textarea id="resumeText" placeholder="...or paste your resume content here (Plain text)..."
+                            rows="12"></textarea>
+                    </div>
+
+                    <button id="analyzeBtn" class="btn primary-btn">
+                        <span>Analyze Resume</span>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="m22 2-7 20-4-9-9-4Z" />
+                            <path d="M22 2 11 13" />
+                        </svg>
+                    </button>
+                </div>
+
+                <div id="resultsArea" class="results-container hidden">
+                    <!-- ... existing results content ... -->
+                    <div class="card glass score-card">
+                        <div class="score-circle">
+                            <svg viewBox="0 0 36 36" class="circular-chart">
+                                <path class="circle-bg"
+                                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                <path class="circle" id="scorePath" stroke-dasharray="0, 100"
+                                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                <text x="18" y="20.35" class="percentage" id="scoreValue">0%</text>
+                            </svg>
+                        </div>
+                        <div class="score-info">
+                            <div class="verdict-badge" id="verdictBadge">PENDING</div>
+                            <h3>Match Score</h3>
+                            <p id="scoreMessage">Analysis complete. Check your results below.</p>
+                            <div class="analysis-meta">
+                                <span id="displayUser">User: Guest</span> • <span id="displayTime">Time: --:--</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="keyword-grid">
+                        <div class="card glass">
+                            <h3>Matching Keywords</h3>
+                            <div id="matchedKeywords" class="keyword-list matched">
+                                <!-- Populated by JS -->
+                            </div>
+                        </div>
+                        <div class="card glass">
+                            <h3>Missing / Weak Keywords</h3>
+                            <div id="missingKeywords" class="keyword-list missing">
+                                <!-- Populated by JS -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card glass insights">
+                        <h3>Actionable Insights</h3>
+                        <ul id="insightsList">
+                            <!-- Populated by JS -->
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- History Section -->
+            <section id="historySection" class="hidden">
+                <div class="history-header">
+                    <h2 class="gradient-text">Analysis History</h2>
+                    <p>Track your progress and stored resume analysis logs.</p>
+                </div>
+
+                <div id="historyPlaceholder" class="card glass empty-history">
+                    <p>No history found or Firebase not connected.</p>
+                </div>
+
+                <div id="historyList" class="history-grid">
+                    <!-- Records will be injected here -->
+                </div>
+                <!-- Admin Section -->
+                <section id="adminSection" class="hidden">
+                    <div class="admin-header">
+                        <h2 class="gradient-text">Global Administration</h2>
+                        <p>Overview of system performance and user activity.</p>
+                    </div>
+
+                    <div class="admin-stats-grid">
+                        <div class="card glass stat-card">
+                            <span class="stat-label">Total Users</span>
+                            <h3 id="statTotalUsers">--</h3>
+                        </div>
+                        <div class="card glass stat-card">
+                            <span class="stat-label">Total Scans</span>
+                            <h3 id="statTotalScans">--</h3>
+                        </div>
+                        <div class="card glass stat-card">
+                            <span class="stat-label">Avg. Match Score</span>
+                            <h3 id="statAvgScore">--%</h3>
+                        </div>
+                    </div>
+
+                    <div class="admin-feed card glass">
+                        <div class="card-header">
+                            <h3>Live Scan Feed</h3>
+                            <p>Real-time analytics across all users.</p>
+                        </div>
+                        <div id="adminScanList" class="admin-table">
+                            <!-- Admin data populated by JS -->
+                            <div class="loading-state">Fetching global records...</div>
+                        </div>
+                    </div>
+                </section>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2026 ResumeScan Pro. Developed by SCK.</p>
+    </footer>
+
+    <!-- Toast Notifications -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
